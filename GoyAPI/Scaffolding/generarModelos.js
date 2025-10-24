@@ -17,7 +17,7 @@ const auto = new SequelizeAuto(name, user, pass, {
   lang: 'esm',               // usa import/export
   additional: {
     timestamps: false,       // evita createdAt / updatedAt si no los tenés
-    freezeTableName: true,      // no pluraliza el nombre de la tabla //que me devuelva la el hdp
+    freezeTableName: true,      // no pluraliza el nombre de la tabla //que me devuelva la s el hdp
     underscored: false,         // true si tu BD usa snake_case
   }
 });

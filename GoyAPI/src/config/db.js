@@ -23,3 +23,5 @@ export async function initDb() {
   // await sequelize.sync({ alter: true });
   console.log('✅ Conexión MySQL OK');
 }
+
+export default sequelize;

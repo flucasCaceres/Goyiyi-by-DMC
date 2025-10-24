@@ -1,10 +1,14 @@
 import { Router } from 'express';
-import { listarEventos } from '../controllers/eventos.controller.js';
+import { cargarEvento, listarEventos, modificarEvento, obtenerEvento, suprimirEvento} from '../controllers/eventos.controller.js';
 
 const rutasEventos = Router();
 
-// GET /v1/eventos
+// HTTP /v1/eventos
+rutasEventos.post('/', cargarEvento);
+rutasEventos.get('/:id', obtenerEvento);
 rutasEventos.get('/', listarEventos);
+rutasEventos.put('/:id', modificarEvento);
+rutasEventos.delete('/:id', suprimirEvento);
 
 export default rutasEventos;
 
