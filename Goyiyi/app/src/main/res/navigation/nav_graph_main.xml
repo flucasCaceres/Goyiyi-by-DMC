@@ -1,0 +1,26 @@
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_main"
+    app:startDestination="@id/home_dest">
+
+    <fragment
+        android:id="@+id/events_dest"
+        android:name="com.dmc.goyiyi.feature.events.ui.EventsFragment"
+        android:label="Eventos" />
+
+    <fragment
+        android:id="@+id/home_dest"
+        android:name="com.dmc.goyiyi.feature.home.ui.HomeFragment"
+        android:label="Home" />
+
+    <fragment
+        android:id="@+id/map_dest"
+        android:name="com.dmc.goyiyi.feature.map.ui.MapFragment"
+        android:label="Mapa" />
+
+    <fragment
+        android:id="@+id/profile_dest"
+        android:name="com.dmc.goyiyi.feature.profile.ui.ProfileFragment"
+        android:label="Perfil" />
+</navigation>

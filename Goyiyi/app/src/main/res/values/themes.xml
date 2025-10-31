@@ -1,0 +1,21 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Goyiyi" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/color_primario</item>
+    </style>
+    <style name="Widget.Goyiyi.BottomNav" parent="Widget.Material3.BottomNavigationView">
+        <item name="itemActiveIndicatorStyle">@style/Widget.Goyiyi.BottomNav.ActiveIndicator</item>
+    </style>
+
+    <style name="Widget.Goyiyi.BottomNav.ActiveIndicator"
+        parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <!-- opcional: forma más “pill” -->
+        <item name="shapeAppearance">@style/ShapeAppearance.Goyiyi.Pill</item>
+    </style>
+
+    <style name="ShapeAppearance.Goyiyi.Pill" parent="ShapeAppearance.Material3.Corner.None">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+    <style name="Theme.Goyiyi" parent="Base.Theme.Goyiyi" />
+</resources>

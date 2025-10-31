@@ -1,0 +1,6 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Goyiyi" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#19A7CE</item>
+    </style>
+</resources>

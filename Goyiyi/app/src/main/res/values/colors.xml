@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="verde_fondo_registro">#8BBF4D</color>
+    <color name="azul_texto_apretable">#0000EE</color>
+    <color name="negro_overlay_spinner">#66000000</color>
+
+    <color name="color_primario">#19A7CE</color>
+
+
+    <color name="rojoMenu">#D32F2F</color>
+    <color name="texto_gris">#666666</color>
+    <color name="pista_gris">#888888</color>
+    <color name="celeste_principal">#33B5E5</color>
+    <color name="azulBoton">#1976D2</color>
+</resources>

@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Goyiyi</string>
+    <string name="maptiler_key">vzmwqODLLZ03lOpffXiR</string>
+    <string name="loading">Cargando…</string>
+    <string name="seleccionar_fecha">Seleccionar fecha</string>
+    <string name="mi_ubicacion">Mi ubicación</string>
+
+</resources>
