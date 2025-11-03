@@ -1,0 +1,25 @@
+# carpetas de build y tooling
+node_modules/
+dist/
+build/
+.out/
+.tmp/
+logs/
+coverage/
+.vscode/
+.idea/
+
+# SO y varios
+.DS_Store
+Thumbs.db
+*.log
+
+# env (dejá el ejemplo)
+.env
+.env.*
+!.env.example
+
+# markdowns a excluir
+consola.md
+consultas.md
+ARQ.md
