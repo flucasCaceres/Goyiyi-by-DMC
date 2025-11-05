@@ -10,15 +10,15 @@ const auto = new SequelizeAuto(name, user, pass, {
   host: host,
   dialect: dialect,
   port: port,
-  directory: './src/models', // carpeta donde se crean los modelos
+  directory: './src/models',
   caseModel: 'p',            // PascalCase para los nombres de modelo
   caseFile: 'c',             // camelCase para los archivos
   singularize: false,
   lang: 'esm',               // usa import/export
   additional: {
-    timestamps: false,       // evita createdAt / updatedAt si no los tenés
-    freezeTableName: true,      // no pluraliza el nombre de la tabla //que me devuelva la s el hdp
-    underscored: false,         // true si tu BD usa snake_case
+    timestamps: false,       // evita createdAt / updatedAt
+    freezeTableName: true,      // no pluraliza el nombre de la tabla
+    underscored: false,
   }
 });
 

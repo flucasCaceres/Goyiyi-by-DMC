@@ -1,11 +1,6 @@
 import { Evento } from '../config/db.js';
 import { eventoRepository } from '../repositories/eventos.repo.js';
 
-/* //va en repositories
-async function getEventoById(id) {
-  return await Evento.findByPk(id);
-} */
-
 export async function obtenerEvento(req, res) {
   const { id } = req.params;
   const evento = await Evento.findByPk(id)
@@ -51,7 +46,7 @@ export async function listarEventos(req, res) {
   res.status(200).json(eventos);
 }
 
-export const obtenerEventoCompleto = async (req, res) => {
+export async function obtenerEventoCompleto (req, res) {
     try {
         const { id } = req.params;
         
@@ -85,33 +80,26 @@ export const obtenerEventoCompleto = async (req, res) => {
     }
 };
 
-export const obtenerEventoBasico = async (req, res) => {
+export async function obtenerResultadoBusqueda(req, res){
     try {
-        const { id } = req.params;
-        
-        if (!id || isNaN(id)) {
-            return res.status(400).json({
-                success: false,
-                message: 'ID de evento inválido'
-            });
-        }
+        const eventos = await eventoRepository.findEventosBasicos();
 
-        const evento = await eventoRepository.findEventoBasico(parseInt(id));
-
-        if (!evento) {
+        if (!eventos || eventos.length === 0) {
             return res.status(404).json({
                 success: false,
-                message: 'Evento no encontrado'
+                message: 'No se encontraron eventos'
             });
         }
 
         res.json({
             success: true,
-            data: evento
+            data: eventos,
+            count: eventos.length,
+            message: `Se encontraron ${eventos.length} eventos`
         });
 
     } catch (error) {
-        console.error('Error al obtener evento:', error);
+        console.error('Error al obtener eventos:', error);
         res.status(500).json({
             success: false,
             message: 'Error interno del servidor',

@@ -7,5 +7,5 @@ const PORT = process.env.PORT;
 await initDb();
 
 app.listen(PORT, () => {
-  console.log(`API escuchando en http://localhost:${PORT}`);
+  console.log(`GoyAPI escuchando en http://localhost:${PORT}`);
 });

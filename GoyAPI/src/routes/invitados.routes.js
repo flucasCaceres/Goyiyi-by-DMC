@@ -4,8 +4,8 @@ import { cargarInvitado, modificarInvitado, obtenerInvitado, suprimirInvitado } 
 const rutasInvitados = Router();
 
 //HTTP /v1/invitados
-rutasInvitados.post('/', cargarInvitado);
+rutasInvitados.post('/crear', cargarInvitado);
 rutasInvitados.get('/:id', obtenerInvitado);
-rutasInvitados.put('/:id', modificarInvitado);
-rutasInvitados.delete('/:id', suprimirInvitado);
+rutasInvitados.put('/modificar/:id', modificarInvitado);
+rutasInvitados.delete('/suprimir/:id', suprimirInvitado);
 export default rutasInvitados;

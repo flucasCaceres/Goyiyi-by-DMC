@@ -1,5 +1,4 @@
-/* import {Ubicaciones} from "models/index.js";
-
+/*
 export async function obtenerGeoCodificacion(req, res) {
   const { id } = req.params;
   const evento = await Ubicaciones.findByPk(id)
@@ -12,7 +11,7 @@ export async function obtenerUbicacion(req, res) {
 } */
 
 import { Op, literal } from 'sequelize';
-import models from '../models/index.js'; // wrapper que exporta lo devuelto por init-models.js
+import models from '../models/index.js';
 
 // Helper: arma include de eventos si el cliente lo pide (?include=eventos)
 function buildIncludes(includeParam) {
@@ -27,15 +26,6 @@ function buildIncludes(includeParam) {
     : [];
 }
 
-// GET /v1/ubicaciones
-// Filtros soportados (opcionales):
-// - ?ciudad=Goya
-// - ?provincia=Corrientes
-// - ?q=Costanera (busca en nombreLugar y direccionFormateada)
-// - ?lat=-29.143 & lon=-59.265 & radio=1500   (metros; usa ST_Distance_Sphere)
-// - ?minLat=&minLon=&maxLat=&maxLon=          (bounding box)
-// - ?limit=20 & ?offset=0
-// - ?include=eventos
 export async function listarUbicaciones(req, res) {
   const {
     ciudad,
@@ -66,19 +56,19 @@ export async function listarUbicaciones(req, res) {
     ];
   }
 
-  // Bounding Box (más barato que radio)
+  // Bounding Box
   if ([minLat, minLon, maxLat, maxLon].every(v => v !== undefined)) {
     where.lat = { [Op.between]: [Number(minLat), Number(maxLat)] };
     where.lon = { [Op.between]: [Number(minLon), Number(maxLon)] };
   }
 
   // Búsqueda por radio (metros) usando columna espacial `geometria`
-  // Requiere MySQL 8+; `geometria` es POINT SRID 4326 (ya lo tenés).
+  // mysql 8+; `geometria` es POINT SRID 4326
   if (lat !== undefined && lon !== undefined && radio !== undefined) {
     const latNum = Number(lat);
     const lonNum = Number(lon);
     const r = Number(radio);
-    // Usa ST_Distance_Sphere(geometria, POINT(lon, lat)) <= r
+    // usar ST_Distance_Sphere(geometria, POINT(lon, lat)) <= r
     where[Op.and] = [
       literal(`ST_Distance_Sphere(geometria, ST_SRID(POINT(${lonNum}, ${latNum}), 4326)) <= ${r}`)
     ];
@@ -97,7 +87,6 @@ export async function listarUbicaciones(req, res) {
   res.status(200).json(rows);
 }
 
-// GET /v1/ubicaciones/:id[?include=eventos]
 export async function obtenerUbicacion(req, res) {
   const { id } = req.params;
   const includes = buildIncludes(req.query?.include);
@@ -108,9 +97,6 @@ export async function obtenerUbicacion(req, res) {
   res.status(200).json(ubic);
 }
 
-// POST /v1/ubicaciones
-// Body mínimo: { lat, lon, ...campos opcionales... }
-// `geometria` se calcula sola (columna STORED)
 export async function crearUbicacion(req, res) {
   const {
     id, // ignorado si llega
@@ -138,7 +124,6 @@ export async function crearUbicacion(req, res) {
     .json(nueva);
 }
 
-// PUT /v1/ubicaciones/:id
 export async function actualizarUbicacion(req, res) {
   const { id } = req.params;
   const ubic = await models.Ubicaciones.findByPk(id);
@@ -150,13 +135,11 @@ export async function actualizarUbicacion(req, res) {
   res.status(200).json(ubic);
 }
 
-// DELETE /v1/ubicaciones/:id
-// Borrado físico (tu tabla no tiene deletedAt). Las FKs en UbicacionesEventos tienen ON DELETE CASCADE.
 export async function eliminarUbicacion(req, res) {
   const { id } = req.params;
   const ubic = await models.Ubicaciones.findByPk(id);
   if (!ubic) return res.status(404).json({ message: 'Ubicación no encontrada' });
 
-  await ubic.destroy(); // cascada en UbicacionesEventos
+  await ubic.destroy();
   res.status(204).send();
 }

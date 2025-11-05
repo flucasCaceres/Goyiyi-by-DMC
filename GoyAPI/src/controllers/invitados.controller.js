@@ -47,12 +47,6 @@ export async function suprimirInvitado(req, res){
     }
 }
 
-// GET /v1/invitados
-// Filtros opcionales:
-//   ?idEvento=123
-//   ?q=romero        (busca por nombreArtistico LIKE)
-//   ?limit=50&offset=0
-//   ?include=evento  (trae el evento asociado usando el alias generado)
 export async function listarInvitados(req, res) {
   const { idEvento, q, limit = 50, offset = 0, include } = req.query ?? {};
 

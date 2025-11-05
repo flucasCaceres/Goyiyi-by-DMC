@@ -43,5 +43,47 @@ export async function suprimirOpinion(req, res){
     }
 }
 
-export async function listarOpinionesEvento(){}
+export async function obtenerValoraciones(req, res){
+    const { id } = req.params;
+    const include = String(req.query?.include || '');
+    const includes = include.split(',').includes('evento')
+    ? [{ model: models.Eventos, as: 'idEvento_evento' }]
+    : [];
+    
+    const where = {};
+    if (id) {
+        where.idEvento = parseInt(id);
+    }
+    
+    const opiniones = await models.Opiniones.findAll({
+      attributes: ['id', 'idEvento', 'valoracion'],
+      where: where,
+      include: includes
+    });
+    
+    if (!opiniones || opiniones.length === 0) return res.status(404).json({ message: 'Opiniones no encontradas' });
+    res.status(200).json(opiniones);
+}
+
+export async function obtenerListaOpinionesEvento(req, res){
+  const { id } = req.params;
+    const include = String(req.query?.include || '');
+    const includes = include.split(',').includes('evento')
+    ? [{ model: models.Eventos, as: 'idEvento_evento' }]
+    : [];
+    
+    const where = {};
+    if (id) {
+        where.idEvento = parseInt(id);
+    }
+    
+    const opiniones = await models.Opiniones.findAll({
+      // attributes: ['id', 'idEvento', 'valoracion'],
+      where: where,
+      include: includes
+    });
+    
+    if (!opiniones || opiniones.length === 0) return res.status(404).json({ message: 'Opiniones no encontradas' });
+    res.status(200).json(opiniones);
+}
 export async function filtrarOpiniones(){}

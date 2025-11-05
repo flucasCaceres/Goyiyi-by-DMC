@@ -3,9 +3,9 @@ import { cargarHorario, modificarHorario, obtenerHorario, suprimirHorario } from
 
 const rutasHorarios = Router();
 
-//HTTP /v1/invitados
-rutasHorarios.post('/', cargarHorario);
+//HTTP /v1/horarios
+rutasHorarios.post('/crear', cargarHorario);
 rutasHorarios.get('/:id', obtenerHorario);
-rutasHorarios.put('/:id', modificarHorario);
-rutasHorarios.delete('/:id', suprimirHorario);
+rutasHorarios.put('/modificar/:id', modificarHorario);
+rutasHorarios.delete('/suprimir/:id', suprimirHorario);
 export default rutasHorarios;

@@ -1,12 +1,14 @@
 import { Router } from 'express';
-import { cargarOpinion, obtenerOpinion, modificarOpinion, suprimirOpinion } from '../controllers/opiniones.controller.js';
+import { cargarOpinion, obtenerOpinion, obtenerValoraciones, modificarOpinion, suprimirOpinion, obtenerListaOpinionesEvento } from '../controllers/opiniones.controller.js';
 
 const rutasOpiniones = Router();
 
 //HTTP /v1/opiniones
-rutasOpiniones.post('/', cargarOpinion);
+rutasOpiniones.post('/crear', cargarOpinion);
 rutasOpiniones.get('/:id', obtenerOpinion);
-rutasOpiniones.put('/:id',modificarOpinion);
-rutasOpiniones.delete('/:id',suprimirOpinion);
+rutasOpiniones.put('/modificar/:id',modificarOpinion);
+rutasOpiniones.delete('/suprimir/:id',suprimirOpinion);
+rutasOpiniones.get('/:id/valoracionesEvento', obtenerValoraciones);
+rutasOpiniones.get('/evento/:id', obtenerListaOpinionesEvento);
 
 export default rutasOpiniones;

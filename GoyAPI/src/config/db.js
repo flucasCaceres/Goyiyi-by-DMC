@@ -14,13 +14,10 @@ export const sequelize = new Sequelize(
   }
 );
 
-// Instancia el modelo y expórtalo para usarlo en los controllers
 export const Evento = EventoModel.init(sequelize, DataTypes);
 
 export async function initDb() {
   await sequelize.authenticate();
-  // En dev, si querés crear/ajustar tablas automáticamente:
-  // await sequelize.sync({ alter: true });
   console.log('✅ Conexión MySQL OK');
 }
 

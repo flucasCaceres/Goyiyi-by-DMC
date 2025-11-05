@@ -33,13 +33,13 @@ export async function modificarHorario(req, res){
 }
 export async function suprimirHorario(req, res){
     const { id } = req.params;
-    const horario = await models.Horario.findByPk(id);
+    const horario = await models.Horarios.findByPk(id);
     if (!horario) {
       res.status(404).json({ message: 'horario no encontrado' });
     } else {
       await horario.destroy(); // con paranoid:true marca deletedAt
       /* res.status(204).end(); // sin body */
-      res.status(200).json({ message: 'horario suprimid0 correctamente'});
+      res.status(200).json({ message: 'horario suprimido correctamente'});
     }
 }
 

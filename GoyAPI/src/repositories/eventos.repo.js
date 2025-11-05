@@ -1,39 +1,39 @@
-import { Eventos, Invitados, Horarios, Tagscategorias, Ubicaciones } from '../models/index.js';
+import { Sequelize } from 'sequelize';
+import { Eventos, Invitados, Horarios, Tagscategorias, Ubicaciones, Opiniones } from '../models/index.js';
+/* //va en repositories
+async function getEventoById(id) {
+  return await Evento.findByPk(id);
+} */
 
 export class EventoRepository {
     
     async findEventoCompleto(eventoId) {
         return await Eventos.findByPk(eventoId, {
             include: [
-                // Evento Padre - CORREGIDO
                 {
                     model: Eventos,
-                    as: 'idEventoPadre_evento', // ← Alias de la relación belongsTo
+                    as: 'idEventoPadre_evento',
                     attributes: ['id', 'nombre', 'estado']
                 },
-                // Invitados - CORREGIDO  
                 {
                     model: Invitados,
-                    as: 'invitados', // ← Alias de hasMany
+                    as: 'invitados',
                     attributes: ['id', 'nombreArtistico', 'foto', 'descripcion']
                 },
-                // Horarios - CORREGIDO
                 {
                     model: Horarios,
-                    as: 'horarios', // ← Alias de hasMany
+                    as: 'horarios',
                     attributes: ['id', 'inicio', 'fin', 'esRecurrente', 'rrule', 'activo']
                 },
-                // Ubicaciones - CORREGIDO (relación N:N)
                 {
                     model: Ubicaciones,
-                    as: 'idUbicacion_ubicaciones', // ← Alias de belongsToMany
+                    as: 'idUbicacion_ubicaciones',
                     attributes: ['id', 'nombreLugar', 'direccionFormateada', 'ciudad', 'provincia', 'lat', 'lon'],
                     through: { attributes: [] }
                 },
-                // Tags y Categorías - CORREGIDO (relación N:N)
                 {
                     model: Tagscategorias,
-                    as: 'idTagsCategorias_tagscategoria', // ← Alias de belongsToMany
+                    as: 'idTagsCategorias_tagscategoria',
                     attributes: ['id', 'nombre', 'tipo'],
                     through: { attributes: [] }
                 }
@@ -41,8 +41,44 @@ export class EventoRepository {
         });
     }
 
-    async findEventoBasico(eventoId) {
-        return await Eventos.findByPk(eventoId);
+    async findEventosBasicos() {
+    return await Eventos.findAll({
+        attributes: ['id', 'nombre', 'contLikes', 'organizador', 'precio', 'moneda', 'metodoPago', 'apto'],
+        include: [
+            {
+                model: Ubicaciones,
+                as: 'idUbicacion_ubicaciones',
+                attributes: ['direccionFormateada'],
+                through: { attributes: [] }
+            },
+            {
+                model: Horarios,
+                as: 'horarios',
+                attributes: ['inicio', 'fin']
+            },
+            {
+                model: Tagscategorias,
+                as: 'idTagsCategorias_tagscategoria',
+                attributes: ['nombre'],
+                through: { attributes: [] }
+            },
+            {
+                model: Opiniones,
+                as: 'opiniones',
+                attributes: ['valoracion']
+            },
+            {
+                model: Eventos,
+                as: 'idEventoPadre_evento',
+                attributes: ['nombre'],
+                required: false
+            }
+        ],
+        order: [
+            ['tipo', 'ASC'],
+            ['id', 'ASC']
+        ]
+    });
     }
 }
 
