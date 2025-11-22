@@ -7,11 +7,13 @@
     <color name="negro_overlay_spinner">#66000000</color>
 
     <color name="color_primario">#19A7CE</color>
-
-
     <color name="rojoMenu">#D32F2F</color>
     <color name="texto_gris">#666666</color>
     <color name="pista_gris">#888888</color>
     <color name="celeste_principal">#33B5E5</color>
     <color name="azulBoton">#1976D2</color>
+
+    <color name="apto_chip_bg">#E0F2F1</color>  <!-- verde agua suave -->
+    <color name="apto_chip_text">#00695C</color> <!-- verde oscuro profesional -->
+
 </resources>

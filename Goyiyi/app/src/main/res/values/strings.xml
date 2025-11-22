@@ -5,4 +5,9 @@
     <string name="seleccionar_fecha">Seleccionar fecha</string>
     <string name="mi_ubicacion">Mi ubicación</string>
 
+    <string name="event_image_content_description">Imagen del evento</string>
+    <string name="event_comments_title">Opiniones del evento</string>
+    <string name="event_comments_see_all">Ver todos los comentarios</string>
+
+
 </resources>

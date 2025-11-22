@@ -11,19 +11,17 @@ import com.dmc.goyiyi.databinding.FragmentLoginBinding
 import com.dmc.goyiyi.R
 import androidx.navigation.fragment.findNavController
 import com.dmc.goyiyi.ui.MainActivity
+import com.dmc.goyiyi.util.LoadingOverlay
+import com.dmc.goyiyi.util.asLoadingOverlay
 
 class LoginFragment : Fragment() {
 
+    private lateinit var loadingOverlay: LoadingOverlay
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
 
-    private fun mostrarCarga() {
-        binding.overlaySpinner.root.bringToFront()
-        binding.overlaySpinner.root.visibility = View.VISIBLE
-    }
-    private fun ocultarCarga() {
-        binding.overlaySpinner.root.visibility = View.GONE
-    }
+    private fun mostrarCarga() = loadingOverlay.show()
+    private fun ocultarCarga() = loadingOverlay.hide()
 
     override fun onCreateView(i: LayoutInflater, c: ViewGroup?, s: Bundle?): View {
         _binding = FragmentLoginBinding.inflate(i, c, false)
@@ -31,33 +29,37 @@ class LoginFragment : Fragment() {
     }
 
     override fun onViewCreated(v: View, s: Bundle?) {
-        ocultarCarga()
-
+        loadingOverlay = binding.overlaySpinner.root.asLoadingOverlay()
+        loadingOverlay.hide() // ocultarlo apenas empieza
         binding.btnLogin.setOnClickListener {
             mostrarCarga()
-            val opts = ActivityOptionsCompat.makeCustomAnimation(
-                requireContext(), android.R.anim.fade_in, android.R.anim.fade_out
-            )
-            // si tenés lógica async, llamá ocultarCarga() en su callback
-            startActivity(Intent(requireContext(), MainActivity::class.java), opts.toBundle())
-            binding.root.post { requireActivity().finish() }
+            binding.btnLogin.isEnabled = false
+
+            binding.root.postDelayed({
+                val opts = ActivityOptionsCompat.makeCustomAnimation(
+                    requireContext(), android.R.anim.fade_in, android.R.anim.fade_out
+                )
+                startActivity(Intent(requireContext(), MainActivity::class.java), opts.toBundle())
+
+                requireActivity().finish()
+            }, 300) // 300ms = tiempo adecuado para que se vea el spinner
+
         }
 
         binding.txtRegistrarse.setOnClickListener {
             if (!binding.txtRegistrarse.isEnabled) return@setOnClickListener
             binding.txtRegistrarse.isEnabled = false
             mostrarCarga()
-            findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
+            binding.root.postDelayed({
+                findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
+            }, 250)
         }
-    }
-
-    override fun onResume() {
-        super.onResume();
-        ocultarCarga()
     }
 
     override fun onDestroyView() {
         // por si quedó visible al navegar:
+        binding.txtRegistrarse.isEnabled = true
+        binding.btnLogin.isEnabled = true
         ocultarCarga()
         _binding = null
         super.onDestroyView()

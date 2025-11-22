@@ -38,4 +38,8 @@
         android:layout_height="match_parent"
         android:layout_gravity="end"
         app:menu="@menu/menu_profile_drawer"/>
+
+    <include
+        android:id="@+id/overlaySpinner"
+        layout="@layout/spinner_de_carga" />
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -8,6 +8,8 @@ import androidx.navigation.fragment.findNavController
 import com.dmc.goyiyi.R
 import com.dmc.goyiyi.auth.vm.RegisterViewModel
 import com.dmc.goyiyi.databinding.FragmentRegisterBinding
+import com.dmc.goyiyi.util.LoadingOverlay
+import com.dmc.goyiyi.util.asLoadingOverlay
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointBackward
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -18,6 +20,8 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 class RegisterFragment : Fragment(R.layout.fragment_register) {
+
+    private lateinit var loadingOverlay: LoadingOverlay
 
     private var _binding: FragmentRegisterBinding? = null
     private val binding get() = _binding!!
@@ -30,6 +34,8 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentRegisterBinding.bind(view)
+        loadingOverlay = binding.overlaySpinner.root.asLoadingOverlay()
+        loadingOverlay.hide()
 
         // Pre-cargar fecha si existe
         vm.fechaNacimientoIso.observe(viewLifecycleOwner) { iso ->
@@ -48,7 +54,9 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
     }
 
     override fun onDestroyView() {
-        ocultarCarga()
+        binding.btnRegistrarse.isEnabled = true
+        binding.tvIniciarSesion.isEnabled = true
+        loadingOverlay.hide()
         _binding = null
         super.onDestroyView()
     }
@@ -59,17 +67,15 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         binding.btnRegistrarse.isEnabled = false
         binding.tvIniciarSesion.isEnabled = false
         mostrarCarga()
-        // Como Register fue abierto desde Login, con un pop alcanza
-        findNavController().popBackStack()
+
+        binding.root.postDelayed({
+            findNavController().popBackStack()
+        }, 250)
     }
 
-    private fun mostrarCarga() {
-        binding.overlaySpinner.root.bringToFront()
-        binding.overlaySpinner.root.visibility = View.VISIBLE
-    }
-    private fun ocultarCarga() {
-        binding.overlaySpinner.root.visibility = View.GONE
-    }
+    private fun mostrarCarga() = loadingOverlay.show()
+    private fun ocultarCarga() = loadingOverlay.hide()
+
 
     // --- DatePicker ---
     private fun abrirDatePicker() {
