@@ -16,4 +16,26 @@ object GeoJsonUtils {
         }
         return """{"type":"FeatureCollection","features":[$feats]}"""
     }
+
+    fun pointWithProperties(lon: Double, lat: Double, properties: Map<String, Any>): String {
+        val props = properties.entries.joinToString(",") { (k, v) ->
+            """"$k":"${v.toString()}""""
+        }
+
+        return """
+            {
+              "type": "Feature",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [$lon,$lat]
+              },
+              "properties": { $props }
+            }
+        """.trimIndent()
+    }
+
+    fun featureCollectionRaw(features: List<String>): String {
+        val joined = features.joinToString(",")
+        return """{"type":"FeatureCollection","features":[$joined]}"""
+    }
 }
