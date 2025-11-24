@@ -1,10 +1,12 @@
-package com.dmc.goyiyi.feature.map.ui.bottomsheet
+package com.dmc.goyiyi.ui.bottomsheet
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.dmc.goyiyi.R
 import com.dmc.goyiyi.databinding.BottomsheetEventBinding
 import com.dmc.goyiyi.feature.map.data.model.EventMapUiModel
 
@@ -31,12 +33,26 @@ class EventBottomSheet : BottomSheetDialogFragment() {
         val organizador = arguments?.getString("organizador") ?: ""
         val likes = arguments?.getInt("likes") ?: 0
         val dislikes = arguments?.getInt("dislikes") ?: 0
+        val eventId = arguments?.getString("eventId") // puede ser null
 
         binding.eventName.text = nombre
         binding.eventEstado.text = estado
         binding.eventTipo.text = tipo
-        binding.eventOrganizador.text = organizador
-        binding.eventRating.text = "$likes 👍   $dislikes 👎"
+        binding.eventOrganizador.text = "Organizador: $organizador"
+        binding.eventLikes.text = likes.toString()
+        binding.eventDislikes.text = dislikes.toString()
+        binding.btnVisitProfile.setOnClickListener {
+            // Solo navegamos si tenemos un id válido
+            eventId
+                ?.takeIf { it.isNotBlank() }
+                ?.let { id ->
+                    val args = Bundle().apply {
+                        putString("eventId", id)
+                    }
+                    findNavController().navigate(R.id.event_detail_dest, args)
+                    dismiss()
+                }
+        }
     }
 
     override fun onDestroyView() {
@@ -49,6 +65,7 @@ class EventBottomSheet : BottomSheetDialogFragment() {
         fun newInstance(event: EventMapUiModel): EventBottomSheet {
             val sheet = EventBottomSheet()
             sheet.arguments = Bundle().apply {
+                putString("eventId", event.id)
                 putString("nombre", event.nombre)
                 putString("estado", event.estado)
                 putString("tipo", event.tipo)

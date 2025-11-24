@@ -1,50 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:padding="20dp"
-    android:background="@color/white"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    android:paddingTop="22dp"
+    android:paddingBottom="20dp"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    android:background="?attr/colorSurface"
+    android:elevation="3dp"
+    android:clipToOutline="true">
 
-    <TextView
-        android:id="@+id/eventName"
-        android:text="Nombre del evento"
-        android:textSize="20sp"
-        android:textStyle="bold"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/eventEstado"
-        android:text="Estado"
-        android:layout_marginTop="8dp"
-        android:textSize="16sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/eventName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="?attr/colorOnSurface"
+            android:paddingTop="2dp"
+            android:paddingBottom="6dp"
+            android:paddingStart="15dp"
+            android:text="Nombre del evento"/>
 
-    <TextView
-        android:id="@+id/eventTipo"
-        android:text="Tipo"
-        android:layout_marginTop="4dp"
-        android:textSize="15sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/eventEstado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="REPROGRAMADO"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="?attr/colorOnPrimary"
+            android:padding="6dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:background="@drawable/bg_tag"
+            android:layout_marginBottom="10dp"/>
 
-    <TextView
-        android:id="@+id/eventOrganizador"
-        android:text="Organizador"
-        android:layout_marginTop="4dp"
-        android:textSize="15sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnVisitProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Visitar perfil"
+            android:textAllCaps="false"
+            android:layout_gravity="end"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:layout_marginBottom="12dp"/>
 
-    <TextView
-        android:id="@+id/eventRating"
-        android:text="100 👍  10 👎"
-        android:layout_marginTop="10dp"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/eventTipo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tipo"
+            android:textSize="15sp"
+            android:textColor="?attr/colorOnSurfaceVariant"/>
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/eventOrganizador"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Organizador:"
+            android:textSize="15sp"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:paddingTop="2dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?attr/colorOutline"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="12dp"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_thumb_up"
+                android:tint="?attr/colorPrimary" />
+
+            <TextView
+                android:id="@+id/eventLikes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="100"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnSurface"
+                android:paddingStart="6dp"/>
+
+            <Space
+                android:layout_width="20dp"
+                android:layout_height="1dp"/>
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_thumb_down"
+                android:tint="?attr/colorPrimary" />
+
+            <TextView
+                android:id="@+id/eventDislikes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="10"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnSurface"
+                android:paddingStart="6dp"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

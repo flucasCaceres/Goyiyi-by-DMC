@@ -19,12 +19,11 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.dmc.goyiyi.R
 import com.dmc.goyiyi.databinding.FragmentMapBinding
 import com.dmc.goyiyi.feature.map.data.model.EventMapUiModel
-import com.dmc.goyiyi.feature.map.ui.bottomsheet.EventBottomSheet
+import com.dmc.goyiyi.ui.bottomsheet.EventBottomSheet
 import com.dmc.goyiyi.feature.map.util.GeoJsonUtils
 import com.dmc.goyiyi.feature.map.vm.EventMapViewModel
 import com.dmc.goyiyi.feature.map.vm.MapViewModel
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
 import kotlinx.coroutines.launch
 import org.maplibre.android.camera.CameraPosition
@@ -36,7 +35,10 @@ import org.maplibre.android.style.expressions.Expression
 import org.maplibre.android.style.layers.Property
 import org.maplibre.android.style.layers.PropertyFactory.*
 import org.maplibre.android.style.layers.SymbolLayer
+import org.maplibre.android.style.layers.CircleLayer
+import org.maplibre.geojson.Point
 import org.maplibre.android.style.sources.GeoJsonSource
+import com.dmc.goyiyi.ui.bottomsheet.MultiEventBottomSheet
 
 class MapFragment : Fragment(R.layout.fragment_map) {
 
@@ -136,18 +138,60 @@ class MapFragment : Fragment(R.layout.fragment_map) {
                 }
 
                 // ---- Source + Layer de eventos ----
-                if (style.getSource(SRC_EVENTS) == null)
-                    style.addSource(GeoJsonSource(SRC_EVENTS))
+                if (style.getSource(SRC_EVENTS) == null) {
+                    style.addSource(
+                        GeoJsonSource(
+                            SRC_EVENTS,
+                            GeoJsonUtils.emptyFeatureCollection(),
+                            org.maplibre.android.style.sources.GeoJsonOptions()
+                                .withCluster(true)
+                                .withClusterRadius(50)
+                                .withClusterMaxZoom(14)
+                        )
+                    )
+                }
 
                 if (style.getLayer(LYR_EVENTS) == null) {
-                    val eventLayer = SymbolLayer(LYR_EVENTS, SRC_EVENTS).withProperties(
-                        iconImage(Expression.get("icon")),
-                        iconAllowOverlap(true),
-                        iconIgnorePlacement(true),
-                        iconAnchor(Property.ICON_ANCHOR_BOTTOM)
-                    )
+                    // ---- Capa de eventos individuales (NO clusters) ----
+                    val eventLayer = SymbolLayer(LYR_EVENTS, SRC_EVENTS)
+                        .withProperties(
+                            iconImage(Expression.get("icon")),
+                            iconAllowOverlap(true),
+                            iconIgnorePlacement(true),
+                            iconAnchor(Property.ICON_ANCHOR_BOTTOM)
+                        )
+                        .withFilter(
+                            Expression.not(Expression.has("point_count")) // solo puntos individuales
+                        )
+
                     style.addLayer(eventLayer)
+
+                    // ---- Capa para clusters (círculo) ----
+                    val clusterLayer = CircleLayer("lyr_cluster", SRC_EVENTS)
+                        .withProperties(
+                            circleColor("#FF8800"),
+                            circleRadius(20f)
+                        )
+                        .withFilter(
+                            Expression.has("point_count")
+                        )
+                    style.addLayer(clusterLayer)
+
+                    // ---- Capa para números dentro del cluster ----
+                    val clusterCountLayer = SymbolLayer("lyr_cluster_count", SRC_EVENTS)
+                        .withProperties(
+                            textField(Expression.toString(Expression.get("point_count"))),
+                            textSize(14f),
+                            textColor("#FFFFFF"),
+                            textAllowOverlap(true),
+                            textIgnorePlacement(true)
+                        )
+                        .withFilter(
+                            Expression.has("point_count")
+                        )
+                    style.addLayer(clusterCountLayer)
                 }
+
 
                 // ---- Pin usuario inicial ----
                 vm.lastUserLatLng?.let { setUserPin(it) } ?: clearUserPin()
@@ -157,25 +201,77 @@ class MapFragment : Fragment(R.layout.fragment_map) {
                     refreshUserLocation(centerCamera = true)
                 }
                 // ---- CLICK EN PINS ----
+                // ---- CLICK EN PINS / CLUSTERS ----
+                // ---- CLICK EN PINS Y MULTI-PINS ----
                 map.addOnMapClickListener { point ->
 
                     val screenPoint = map.projection.toScreenLocation(point)
+                    val touchSize = 60f
 
-                    // Buscamos features visibles del layer LYR_EVENTS
-                    val features = map.queryRenderedFeatures(screenPoint, LYR_EVENTS)
+                    val rect = android.graphics.RectF(
+                        screenPoint.x - touchSize,
+                        screenPoint.y - touchSize,
+                        screenPoint.x + touchSize,
+                        screenPoint.y + touchSize
+                    )
 
-                    if (features.isNotEmpty()) {
-                        val f = features[0]
-                        val id = f.getStringProperty("id")
-                        val nombre = f.getStringProperty("name")
+                    val candidates = map.queryRenderedFeatures(rect, LYR_EVENTS)
 
-                        Log.d("PIN_CLICK", "Pin clickeado: id=$id nombre=$nombre")
+                    if (candidates.isNotEmpty()) {
 
-                        // Buscar evento completo en ViewModel
-                        val event = eventVm.eventPins.value.find { it.id.toString() == id }
+                        val nearest = candidates.minByOrNull { feature ->
+                            val geo = feature.geometry() as? org.maplibre.geojson.Point
+                                ?: return@minByOrNull Float.MAX_VALUE
 
-                        event?.let {
-                            showEventBottomSheet(it)
+                            val projected = map.projection.toScreenLocation(
+                                LatLng(geo.latitude(), geo.longitude())
+                            )
+
+                            val dx = projected.x - screenPoint.x
+                            val dy = projected.y - screenPoint.y
+                            dx * dx + dy * dy
+                        }
+
+                        nearest?.let { feature ->
+                            val geo = feature.geometry() as? org.maplibre.geojson.Point
+                            val clickedLat = geo?.latitude()
+                            val clickedLng = geo?.longitude()
+
+                            if (clickedLat != null && clickedLng != null) {
+
+                                val epsilon = 1e-6
+
+                                val eventsAtSameSpot = eventVm.eventPins.value.filter { e ->
+                                    kotlin.math.abs(e.lat - clickedLat) < epsilon &&
+                                            kotlin.math.abs(e.lng - clickedLng) < epsilon
+                                }
+
+                                when {
+                                    eventsAtSameSpot.size == 1 -> {
+                                        showEventBottomSheet(eventsAtSameSpot.first())
+                                    }
+                                    eventsAtSameSpot.size > 1 -> {
+                                        showMultiEventBottomSheet(eventsAtSameSpot)
+                                    }
+                                }
+
+                                return@addOnMapClickListener true
+                            }
+                        }
+                    }
+
+                    val clusterFeatures = map.queryRenderedFeatures(screenPoint, "lyr_cluster")
+                    if (clusterFeatures.isNotEmpty()) {
+                        val clusterFeature = clusterFeatures[0]
+                        val geometry = clusterFeature.geometry() as? org.maplibre.geojson.Point
+
+                        geometry?.let { p ->
+                            map.animateCamera(
+                                CameraUpdateFactory.newLatLngZoom(
+                                    LatLng(p.latitude(), p.longitude()),
+                                    16.0
+                                )
+                            )
                         }
 
                         return@addOnMapClickListener true
@@ -183,6 +279,9 @@ class MapFragment : Fragment(R.layout.fragment_map) {
 
                     false
                 }
+
+
+
 
 
                 // ---------------------------------------------------------
@@ -321,6 +420,13 @@ class MapFragment : Fragment(R.layout.fragment_map) {
     private fun showEventBottomSheet(event: EventMapUiModel) {
         val sheet = EventBottomSheet.newInstance(event)
         sheet.show(parentFragmentManager, "EventBottomSheet")
+    }
+
+    private fun showMultiEventBottomSheet(events: List<EventMapUiModel>) {
+        val sheet = MultiEventBottomSheet(events) { selected ->
+            showEventBottomSheet(selected)
+        }
+        sheet.show(parentFragmentManager, "MultiEventBottomSheet")
     }
 
 }

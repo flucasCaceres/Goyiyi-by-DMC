@@ -1,5 +1,25 @@
-<vector xmlns:android="http://schemas.android.com/apk/res/android" android:height="24dp" android:tint="#2962FF" android:viewportHeight="24" android:viewportWidth="24" android:width="24dp">
-      
-    <path android:fillColor="@android:color/white" android:pathData="M12,2C8.13,2 5,5.13 5,9c0,5.25 7,13 7,13s7,-7.75 7,-13c0,-3.87 -3.13,-7 -7,-7zM12,11.5c-1.38,0 -2.5,-1.12 -2.5,-2.5s1.12,-2.5 2.5,-2.5 2.5,1.12 2.5,2.5 -1.12,2.5 -2.5,2.5z"/>
-    
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="28dp"
+    android:height="28dp"
+    android:viewportWidth="28"
+    android:viewportHeight="28">
+
+    <!-- Círculo exterior con borde -->
+    <path
+        android:pathData="M14,2C7.37,2 2,7.37 2,14s5.37,12 12,12 12,-5.37 12,-12S20.63,2 14,2z"
+        android:strokeColor="#000000"
+        android:strokeWidth="0.8"
+        android:fillColor="#4285F4" /> <!-- Azul Google Maps -->
+
+    <!-- Borde blanco exterior (ligero) -->
+    <path
+        android:pathData="M14,4.3c-5.33,0 -9.7,4.37 -9.7,9.7s4.37,9.7 9.7,9.7 9.7,-4.37 9.7,-9.7S19.33,4.3 14,4.3z"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:fillColor="@android:color/transparent" />
+
+    <!-- Punto central -->
+    <path
+        android:pathData="M14,10.5a3.5,3.5 0 1,1 0,7a3.5,3.5 0 1,1 0,-7z"
+        android:fillColor="#FFFFFF" />
 </vector>

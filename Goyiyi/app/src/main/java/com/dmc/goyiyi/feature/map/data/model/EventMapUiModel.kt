@@ -1,7 +1,7 @@
 package com.dmc.goyiyi.feature.map.data.model
 
 data class EventMapUiModel(
-    val id: Int,
+    val id: String,
     val nombre: String,
     val lat: Double,
     val lng: Double,

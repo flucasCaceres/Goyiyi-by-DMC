@@ -13,12 +13,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object EventModule {
-
-    @Provides
-    @Singleton
-    fun provideApiService(): ApiService =
-        RetrofitClient.retrofit.create(ApiService::class.java)
-
     @Provides
     @Singleton
     fun provideEventRemoteDataSource(api: ApiService): EventRemoteDataSource =

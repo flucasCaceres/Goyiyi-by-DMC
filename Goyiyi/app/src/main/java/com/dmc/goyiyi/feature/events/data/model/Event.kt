@@ -1,7 +1,7 @@
 package com.dmc.goyiyi.feature.events.data.model
 
 data class Event(
-    val id: Int,
+    val id: String,
     val nombre: String,
     val estado: String?,
     val tipo: String?,

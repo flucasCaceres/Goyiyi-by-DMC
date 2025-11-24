@@ -18,7 +18,7 @@ class EventDetailViewModel @Inject constructor(
     private val _state = MutableStateFlow<DetailUiState>(DetailUiState.Loading)
     val state: StateFlow<DetailUiState> = _state
 
-    fun loadEvent(id: Int) {
+    fun loadEvent(id: String) {
         viewModelScope.launch {
             try {
                 _state.value = DetailUiState.Loading

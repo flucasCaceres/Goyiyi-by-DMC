@@ -64,32 +64,37 @@ class EventDetailFragment : Fragment() {
 
     private fun showDetail(event: Event) = with(binding) {
         // Datos básicos (lo que ya tenías)
-        title.text = event.nombre
+        title.text = event.nombre ?: "Sin nombre"
         description.text = event.descripcion
-        organizador.text = "Organizador: ${event.organizador ?: "..."}"
-        estado.text = "Estado: ${event.estado ?: "..."}"
-        tipo.text = "Tipo: ${event.tipo ?: "..." }"
+            ?.takeIf { it.isNotBlank() }
+            ?: "Sin descripción disponible"
+        organizador.text = "Organizador: ${event.organizador ?: "No especificado"}"
+        estado.text = event.estado ?: "Sin estado"
+        tipo.text = event.tipo ?: "No especificado"
 
-        // Nuevos datos del JSON
-        // apto: +8 AÑOS
-        apto.text = "Apto: ${event.apto}"
+        // Apto para
+        apto.text = "Apto: ${event.apto ?: "No especificado"}"
 
         // Contador de cupos / participantes
         // ejemplo: "Entradas: 60 / 200 (mín 10)"
-        cupo.text = "Entradas: ${event.contEntradasVendidas} / ${event.cupoMax}"
+        cupo.text = "Entradas: ${event.contEntradasVendidas ?: 0} / ${event.cupoMax ?: 0}"
 
         // Precio + moneda
-        precio.text = "${event.moneda} ${event.precio}"
+        val moneda = event.moneda ?: "ARS"
+        val precioValor = event.precio ?: 0
+        precio.text = "$moneda $precioValor"
 
-        metodoPago.text = "Método de pago: ${event.metodoPago}"
+        // Método de pago
+        metodoPago.text = "Método de pago: ${event.metodoPago ?: "No especificado"}"
 
         // Likes / dislikes
-        likes.text = "👍 ${event.contLikes}"
-        dislikes.text = "👎 ${event.contDislikes}"
+        likes.text = "👍 ${event.contLikes ?: 0}"
+        dislikes.text = "👎 ${event.contDislikes ?: 0}"
 
+        eventImage.setImageResource(android.R.color.darker_gray)
         // Comentarios: por ahora solo placeholders, cuando tengas el modelo se enchufa acá
         verTodosComentarios.setOnClickListener {
-            // TODO: navegar a una pantalla de "todas las reseñas" tipo MercadoLibre
+            // TODO: acción futura
         }
     }
 
