@@ -31,84 +31,31 @@
             android:textColor="@android:color/black"
             android:layout_marginBottom="16dp"/>
 
-        <!-- Nombre -->
+        <!-- Nombre de usuario -->
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilUsuario"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etNombres"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Nombre"
-                android:textColor="@color/texto_gris"
-                android:textColorHint="@color/pista_gris"
-                android:padding="12dp"
-                android:inputType="textPersonName"
-                android:imeOptions="actionNext"/>
-        </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Apellidos -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etApellidos"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Apellidos"
-                android:textColor="@color/texto_gris"
-                android:textColorHint="@color/pista_gris"
-                android:padding="12dp"
-                android:inputType="textPersonName"
-                android:imeOptions="actionNext"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Fecha de nacimiento -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilFechaNacimiento"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:endIconMode="custom"
-            app:endIconDrawable="@drawable/ic_calendar_24"
-            app:endIconContentDescription="@string/seleccionar_fecha">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etFechaNacimiento"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Fecha de nacimiento"
-                android:textColor="@color/texto_gris"
-                android:textColorHint="@color/pista_gris"
-                android:padding="12dp"
-                android:inputType="date"
-                android:focusable="false"
-                android:clickable="true"
-                android:imeOptions="actionNext"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Teléfono -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etUsuario"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Telefono"
+                android:hint="Nombre de usuario"
                 android:textColor="@color/texto_gris"
                 android:textColorHint="@color/pista_gris"
                 android:padding="12dp"
-                android:inputType="phone"
+                android:inputType="textPersonName"
                 android:imeOptions="actionNext"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Correo -->
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilCorreo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etCorreo"
                 android:layout_width="match_parent"
@@ -123,10 +70,14 @@
 
         <!-- Contraseña -->
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilContrasena"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            app:endIconMode="password_toggle">
+            app:endIconMode="password_toggle"
+            app:helperText="La contraseña debe tener mínimo 6 caracteres"
+            app:helperTextTextColor="@color/black">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etContrasena"
                 android:layout_width="match_parent"
@@ -141,10 +92,12 @@
 
         <!-- Confirmar contraseña -->
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilConfirmarContrasena"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             app:endIconMode="password_toggle">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etConfirmarContrasena"
                 android:layout_width="match_parent"
@@ -157,38 +110,32 @@
                 android:imeOptions="actionDone"/>
         </com.google.android.material.textfield.TextInputLayout>
 
+
         <!-- Botón registrarse -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRegistrarse"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:layout_gravity="center"
             android:text="Registrarse"
             android:textColor="@android:color/white"
-            android:backgroundTint="@color/black"
-            app:iconPadding="0dp"/>
+            android:backgroundTint="@color/black"/>
 
         <!-- Enlace a iniciar sesión -->
         <TextView
             android:id="@+id/tvIniciarSesion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
             android:text="¿Ya tenés una cuenta? Iniciá sesión"
             android:textColor="@color/azul_texto_apretable"
             android:textStyle="bold"
-            android:layout_gravity="center"
+            android:layout_marginTop="12dp"
+            android:gravity="center"
             android:clickable="true"
-            android:focusable="true"
-            android:paddingVertical="6dp"
-            android:paddingHorizontal="8dp"
-            android:foreground="?attr/selectableItemBackground"/>
-
+            android:focusable="true"/>
 
     </LinearLayout>
 
-    <!-- Overlay de carga para bloqueos al navegar -->
     <include
         android:id="@+id/overlaySpinner"
         layout="@layout/spinner_de_carga"
@@ -196,6 +143,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

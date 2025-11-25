@@ -23,6 +23,7 @@ import com.dmc.goyiyi.ui.bottomsheet.EventBottomSheet
 import com.dmc.goyiyi.feature.map.util.GeoJsonUtils
 import com.dmc.goyiyi.feature.map.vm.EventMapViewModel
 import com.dmc.goyiyi.feature.map.vm.MapViewModel
+import com.dmc.goyiyi.ui.MainActivity
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationTokenSource
 import kotlinx.coroutines.launch
@@ -39,6 +40,8 @@ import org.maplibre.android.style.layers.CircleLayer
 import org.maplibre.geojson.Point
 import org.maplibre.android.style.sources.GeoJsonSource
 import com.dmc.goyiyi.ui.bottomsheet.MultiEventBottomSheet
+import com.dmc.goyiyi.util.LoadingOverlay
+import com.dmc.goyiyi.util.asLoadingOverlay
 
 class MapFragment : Fragment(R.layout.fragment_map) {
 
@@ -47,6 +50,19 @@ class MapFragment : Fragment(R.layout.fragment_map) {
 
     private val vm: MapViewModel by activityViewModels()
     private val eventVm: EventMapViewModel by activityViewModels()
+
+    private lateinit var loadingOverlay: LoadingOverlay
+
+    private fun mostrarCarga() {
+        loadingOverlay.show()
+    }
+
+    private fun ocultarCarga() {
+        loadingOverlay.hide()
+    }
+
+
+
 
     private val GOYA = LatLng(-29.1440, -59.2650)
     private val GOYA_BOUNDS = LatLngBounds.Builder()
@@ -79,16 +95,20 @@ class MapFragment : Fragment(R.layout.fragment_map) {
     @SuppressLint("UnsafeRepeatOnLifecycleDetector")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = FragmentMapBinding.bind(view)
-        binding.mapView.onCreate(savedInstanceState)
 
+        _binding = FragmentMapBinding.bind(view)
+
+        loadingOverlay = binding.overlaySpinner.root.asLoadingOverlay()
+
+        binding.mapView.onCreate(savedInstanceState)
         vm.locationPermissionGranted = hasLocationPermission()
+        eventVm.loadRealEvents()
+        mostrarCarga()
 
         binding.mapView.getMapAsync { map ->
             mapRef = map
             map.setStyle(
-                "https://api.maptiler.com/maps/0199cbca-451f-7cfe-95e6-963d8d628d96/style.json?key=j73X6NNd8LAS77DbHyVB"
-            ) { style ->
+                "https://api.maptiler.com/maps/0199cbca-451f-7cfe-95e6-963d8d628d96/style.json?key=j73X6NNd8LAS77DbHyVB") { style ->
 
                 // ---- Limites de cámara ----
                 map.setLatLngBoundsForCameraTarget(GOYA_BOUNDS)
@@ -291,8 +311,6 @@ class MapFragment : Fragment(R.layout.fragment_map) {
                     repeatOnLifecycle(Lifecycle.State.STARTED) {
                         eventVm.eventPins.collect { events ->
 
-                            Log.d("FLOW_STYLE", "Colectando eventos dentro de getStyle, total=${events.size}")
-
                             val features = events.map { event ->
                                 val iconName = when (event.estado.uppercase()) {
                                     "SUCEDIENDO" -> "ic_pin_sucediendo"
@@ -322,6 +340,18 @@ class MapFragment : Fragment(R.layout.fragment_map) {
                         }
                     }
                 }
+                // PATCH MAP 3 — observar loading del ViewModel
+                lifecycleScope.launch {
+                    repeatOnLifecycle(Lifecycle.State.STARTED) {
+                        eventVm.loading.collect { isLoading ->
+                            if (isLoading) {
+                                mostrarCarga()
+                            } else {
+                                ocultarCarga()
+                            }
+                        }
+                    }
+                }
 
             }
         }
@@ -338,6 +368,7 @@ class MapFragment : Fragment(R.layout.fragment_map) {
     override fun onResume() {
         super.onResume()
         binding.mapView.onResume()
+        eventVm.loadRealEvents()
         if (vm.locationPermissionGranted) {
             refreshUserLocation(centerCamera = false)
         }

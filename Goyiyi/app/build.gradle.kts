@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.androidx.recyclerview)
     implementation("androidx.navigation:navigation-fragment-ktx:2.8.3")
     implementation("androidx.navigation:navigation-ui-ktx:2.8.3")
+    implementation(libs.androidx.swiperefreshlayout)
     testImplementation(libs.junit)
     implementation (libs.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -76,5 +77,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
+
 
 }

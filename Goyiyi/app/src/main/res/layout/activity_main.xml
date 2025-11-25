@@ -29,6 +29,7 @@
             app:menu="@menu/menu_bottom_tabs"
             app:labelVisibilityMode="selected"
             style="?attr/bottomNavigationStyle"/>
+
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <!-- DRAWER DERECHO: se superpone SOBRE todo (incluye el bottom) -->
@@ -41,5 +42,9 @@
 
     <include
         android:id="@+id/overlaySpinner"
-        layout="@layout/spinner_de_carga" />
+        layout="@layout/spinner_de_carga"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 </androidx.drawerlayout.widget.DrawerLayout>

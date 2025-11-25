@@ -11,8 +11,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.dmc.goyiyi.databinding.FragmentEventDetailBinding
 import com.dmc.goyiyi.feature.events.data.model.Event
+import com.dmc.goyiyi.feature.events.data.model.Opinion
 import com.dmc.goyiyi.feature.events.vm.DetailUiState
 import com.dmc.goyiyi.feature.events.vm.EventDetailViewModel
+import com.dmc.goyiyi.R
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -60,6 +62,50 @@ class EventDetailFragment : Fragment() {
                 }
             }
         }
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.opinionesPreview.collect { opiniones ->
+                renderOpinionesPreview(opiniones)
+            }
+        }
+
+    }
+    private fun renderOpinionesPreview(opiniones: List<Opinion>) {
+        with(binding) {
+
+            // Sin opiniones → ocultamos todo
+            if (opiniones.isEmpty()) {
+                comentario1.visibility = View.VISIBLE
+                comentario1.text = "Nadie opinó todavía"
+                comentario2.visibility = View.GONE
+
+                verTodosComentarios.isEnabled = true
+                verTodosComentarios.text = "Ver todos los comentarios"
+                return
+            }
+
+
+            // Hay opiniones
+            verTodosComentarios.isEnabled = true
+            verTodosComentarios.text = "Ver todos los comentarios"
+
+            // Primera opinión
+            val first = opiniones.getOrNull(0)
+            if (first != null) {
+                comentario1.visibility = View.VISIBLE
+                comentario1.text = "★${first.valoracion}  ${first.comentarios.orEmpty()}"
+            } else {
+                comentario1.visibility = View.GONE
+            }
+
+            // Segunda opinión
+            val second = opiniones.getOrNull(1)
+            if (second != null) {
+                comentario2.visibility = View.VISIBLE
+                comentario2.text = "★${second.valoracion}  ${second.comentarios.orEmpty()}"
+            } else {
+                comentario2.visibility = View.GONE
+            }
+        }
     }
 
     private fun showDetail(event: Event) = with(binding) {
@@ -88,18 +134,43 @@ class EventDetailFragment : Fragment() {
         metodoPago.text = "Método de pago: ${event.metodoPago ?: "No especificado"}"
 
         // Likes / dislikes
-        likes.text = "👍 ${event.contLikes ?: 0}"
-        dislikes.text = "👎 ${event.contDislikes ?: 0}"
+        likes.apply {
+            text = (event.contLikes ?: 0).toString()
+            setCompoundDrawablesWithIntrinsicBounds(
+                R.drawable.ic_thumb_up, 0, 0, 0
+            )
+        }
+
+        dislikes.apply {
+            text = (event.contDislikes ?: 0).toString()
+            setCompoundDrawablesWithIntrinsicBounds(
+                R.drawable.ic_thumb_down, 0, 0, 0
+            )
+        }
+
 
         eventImage.setImageResource(android.R.color.darker_gray)
         // Comentarios: por ahora solo placeholders, cuando tengas el modelo se enchufa acá
         verTodosComentarios.setOnClickListener {
-            // TODO: acción futura
+            val action = EventDetailFragmentDirections
+                .actionEventDetailFragmentToOpinionesFragment(args.eventId)
+
+            findNavController().navigate(action)
         }
+
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.loadEvent(args.eventId)
+    }
+
+
+
 }

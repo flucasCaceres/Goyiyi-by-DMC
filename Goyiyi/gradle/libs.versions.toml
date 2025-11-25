@@ -21,6 +21,7 @@ materialVersion = "1.12.0"
 recyclerview = "1.4.0"
 navigationFragmentKtx = "2.9.5"
 navigationUiKtx = "2.9.5"
+swiperefreshlayout = "1.1.0"
 
 [libraries]
 android-sdk = { module = "org.maplibre.gl:android-sdk", version.ref = "androidSdk" }
@@ -43,6 +44,7 @@ androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview"
 material-v1120 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
 androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
 androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
+androidx-swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

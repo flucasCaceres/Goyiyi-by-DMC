@@ -2,114 +2,150 @@ package com.dmc.goyiyi.auth.ui
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.dmc.goyiyi.R
+import com.dmc.goyiyi.auth.vm.RegisterState
 import com.dmc.goyiyi.auth.vm.RegisterViewModel
 import com.dmc.goyiyi.databinding.FragmentRegisterBinding
-import com.dmc.goyiyi.util.LoadingOverlay
 import com.dmc.goyiyi.util.asLoadingOverlay
-import com.google.android.material.datepicker.CalendarConstraints
-import com.google.android.material.datepicker.DateValidatorPointBackward
-import com.google.android.material.datepicker.MaterialDatePicker
-import java.time.Instant
-import java.time.LocalDate
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
-import java.util.Locale
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import com.google.android.material.textfield.TextInputLayout
 
+
+@AndroidEntryPoint
 class RegisterFragment : Fragment(R.layout.fragment_register) {
-
-    private lateinit var loadingOverlay: LoadingOverlay
 
     private var _binding: FragmentRegisterBinding? = null
     private val binding get() = _binding!!
-
-    private val uiFmt = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault())
-    private val isoFmt = DateTimeFormatter.ISO_LOCAL_DATE
-    private val DOB_TAG = "fecha_nacimiento_picker"
 
     private val vm: RegisterViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentRegisterBinding.bind(view)
-        loadingOverlay = binding.overlaySpinner.root.asLoadingOverlay()
-        loadingOverlay.hide()
 
-        // Pre-cargar fecha si existe
-        vm.fechaNacimientoIso.observe(viewLifecycleOwner) { iso ->
-            binding.etFechaNacimiento.setText(
-                iso?.let { LocalDate.parse(it, isoFmt).format(uiFmt) } ?: ""
-            )
+        val loading = binding.overlaySpinner.root.asLoadingOverlay()
+        loading.hide()
+
+        // --- BOTÓN REGISTRARSE ---
+        binding.btnRegistrarse.setOnClickListener {
+            limpiarErrores()
+            val nombre = binding.etUsuario.text.toString().trim()
+            val correo = binding.etCorreo.text.toString().trim()
+            val pass = binding.etContrasena.text.toString()
+            val confPass = binding.etConfirmarContrasena.text.toString()
+
+            var hayError = false
+
+            if (nombre.isBlank()) {
+                binding.tilUsuario.error = "Ingresá un nombre de usuario"
+                hayError = true
+            }
+
+            if (correo.isBlank()) {
+                binding.tilCorreo.error = "Ingresá un correo electrónico"
+                hayError = true
+            } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
+                binding.tilCorreo.error = "Ingresá un correo válido"
+                hayError = true
+            }
+
+            if (pass.isBlank()) {
+                binding.tilContrasena.error = "Ingresá una contraseña"
+                manejarIconoContrasena()
+                hayError = true
+            } else if (pass.length < 6) {
+                binding.tilContrasena.error = "Mínimo 6 caracteres"
+                manejarIconoContrasena()
+                hayError = true
+            }
+
+
+            if (confPass.isBlank()) {
+                binding.tilConfirmarContrasena.error = "Repetí la contraseña"
+                hayError = true
+            } else if (pass != confPass) {
+                binding.tilConfirmarContrasena.error = "Las contraseñas no coinciden"
+                hayError = true
+            }
+
+            if (hayError) {
+                Toast.makeText(requireContext(), "Por favor completá todos los campos correctamente", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+            binding.tilContrasena.error = null
+            manejarIconoContrasena()
+            // Si pasó todas las validaciones de UI, recién ahí llamamos al ViewModel
+            vm.register(nombre, correo, pass, confPass)
         }
 
-        // Abrir calendario
-        binding.etFechaNacimiento.setOnClickListener { abrirDatePicker() }
-        binding.tilFechaNacimiento.setEndIconOnClickListener { abrirDatePicker() }
 
-        // Volver a Login mostrando spinner
-        binding.btnRegistrarse.setOnClickListener { volverALoginConSpinner() }
-        binding.tvIniciarSesion.setOnClickListener { volverALoginConSpinner() }
+        // --- IR A LOGIN ---
+        binding.tvIniciarSesion.setOnClickListener { volverALoginConSpinner(loading) }
+
+        // --- OBSERVAR ESTADOS ---
+        lifecycleScope.launchWhenStarted {
+            vm.state.collectLatest { state ->
+                when (state) {
+                    is RegisterState.Idle -> Unit
+
+                    is RegisterState.Loading -> {
+                        loading.show()
+                        binding.btnRegistrarse.isEnabled = false
+                        binding.tvIniciarSesion.isEnabled = false
+                    }
+
+                    is RegisterState.Success -> {
+                        loading.hide()
+                        Toast.makeText(requireContext(), "Cuenta creada exitosamente", Toast.LENGTH_LONG).show()
+                        findNavController().popBackStack()
+                    }
+
+                    is RegisterState.Error -> {
+                        loading.hide()
+                        Toast.makeText(requireContext(), state.error, Toast.LENGTH_LONG).show()
+                        binding.btnRegistrarse.isEnabled = true
+                        binding.tvIniciarSesion.isEnabled = true
+                    }
+                    else -> Unit
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {
-        binding.btnRegistrarse.isEnabled = true
-        binding.tvIniciarSesion.isEnabled = true
-        loadingOverlay.hide()
         _binding = null
         super.onDestroyView()
     }
 
-    // --- Navegación a Login con overlay ---
-    private fun volverALoginConSpinner() {
-        if (!binding.btnRegistrarse.isEnabled) return
+    private fun limpiarErrores() {
+        binding.tilUsuario.error = null
+        binding.tilCorreo.error = null
+        binding.tilContrasena.error = null
+        binding.tilConfirmarContrasena.error = null
+        manejarIconoContrasena()
+    }
+    private fun manejarIconoContrasena() {
+        val error = binding.tilContrasena.error
+
+        if (error.isNullOrEmpty()) {
+            binding.tilContrasena.endIconMode = TextInputLayout.END_ICON_PASSWORD_TOGGLE
+        } else {
+            binding.tilContrasena.endIconMode = TextInputLayout.END_ICON_NONE
+        }
+    }
+
+    private fun volverALoginConSpinner(loading: com.dmc.goyiyi.util.LoadingOverlay) {
         binding.btnRegistrarse.isEnabled = false
         binding.tvIniciarSesion.isEnabled = false
-        mostrarCarga()
+        loading.show()
 
         binding.root.postDelayed({
             findNavController().popBackStack()
         }, 250)
-    }
-
-    private fun mostrarCarga() = loadingOverlay.show()
-    private fun ocultarCarga() = loadingOverlay.hide()
-
-
-    // --- DatePicker ---
-    private fun abrirDatePicker() {
-        val preSelectedLocal: LocalDate? = vm.fechaNacimientoIso.value?.let {
-            LocalDate.parse(it, isoFmt)
-        }
-        val preSelectedUtcMillis: Long? = preSelectedLocal
-            ?.atStartOfDay(ZoneOffset.UTC)
-            ?.toInstant()
-            ?.toEpochMilli()
-
-        val constraints = CalendarConstraints.Builder()
-            .setValidator(DateValidatorPointBackward.now())
-            .build()
-
-        val builder = MaterialDatePicker.Builder.datePicker()
-            .setTitleText("Seleccioná tu fecha de nacimiento")
-            .setCalendarConstraints(constraints)
-
-        preSelectedUtcMillis?.let { builder.setSelection(it) }
-
-        val picker = builder.build()
-
-        picker.addOnPositiveButtonClickListener { utcMillis ->
-            val pickedLocalDate: LocalDate = Instant.ofEpochMilli(utcMillis)
-                .atZone(ZoneOffset.UTC)
-                .toLocalDate()
-
-            binding.etFechaNacimiento.setText(pickedLocalDate.format(uiFmt))
-            vm.setFechaNacimientoIso(pickedLocalDate.format(isoFmt))
-        }
-
-        if (childFragmentManager.findFragmentByTag(DOB_TAG) == null) {
-            picker.show(childFragmentManager, DOB_TAG)
-        }
     }
 }

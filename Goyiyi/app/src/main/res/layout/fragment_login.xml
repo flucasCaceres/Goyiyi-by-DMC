@@ -55,15 +55,16 @@
 
                 <!-- Email -->
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilCorreo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/editTextEmail"
+                        android:id="@+id/etCorreo"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Usuario o Email"
+                        android:hint="Email"
                         android:textColor="@color/texto_gris"
                         android:textColorHint="@color/pista_gris"
                         android:inputType="textEmailAddress"
@@ -73,13 +74,14 @@
 
                 <!-- Password -->
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilContrasena"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:endIconMode="password_toggle"
                     android:layout_marginTop="8dp">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/editTextPassword"
+                        android:id="@+id/etContrasena"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Contraseña"
@@ -98,6 +100,16 @@
                     android:layout_height="wrap_content"
                     android:text="→ Iniciar Sesión"
                     android:layout_marginTop="16dp" />
+
+                <TextView
+                    android:id="@+id/tvErrorLogin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/rojoMenu"
+                    android:text=""
+                    android:visibility="gone"
+                    android:layout_marginBottom="8dp"/>
+
 
                 <!-- Link registro -->
                 <TextView

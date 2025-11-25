@@ -15,6 +15,16 @@
     </fragment>
 
     <fragment
+        android:id="@+id/opinionesFragment"
+        android:name="com.dmc.goyiyi.feature.events.ui.OpinionesFragment"
+        android:label="Opiniones">
+        <argument
+            android:name="idEvento"
+            app:argType="string" />
+    </fragment>
+
+
+    <fragment
         android:id="@+id/home_dest"
         android:name="com.dmc.goyiyi.feature.home.ui.HomeFragment"
         android:label="Home" />
@@ -37,5 +47,9 @@
         <argument
             android:name="eventId"
             app:argType="string" />
+
+        <action
+            android:id="@+id/action_eventDetailFragment_to_opinionesFragment"
+            app:destination="@id/opinionesFragment" />
     </fragment>
 </navigation>

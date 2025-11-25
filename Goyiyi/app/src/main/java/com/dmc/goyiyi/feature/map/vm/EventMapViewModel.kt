@@ -16,20 +16,21 @@ class EventMapViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _eventPins = MutableStateFlow<List<EventMapUiModel>>(emptyList())
-    val eventPins: StateFlow<List<EventMapUiModel>> = _eventPins
+    val eventPins: StateFlow<List<EventMapUiModel>> get() = _eventPins
 
-    private val _loading = MutableStateFlow(true)
-    val loading: StateFlow<Boolean> = _loading
+    private val _loading = MutableStateFlow(false)
+    val loading: StateFlow<Boolean> get() = _loading
 
-    private val _error = MutableStateFlow<String?>(null)
-    val error: StateFlow<String?> = _error
+    private val _error = MutableStateFlow("")
+    val error: StateFlow<String> get() = _error
 
     init {
         loadRealEvents()
     }
 
-    private fun loadRealEvents() {
+    fun loadRealEvents() {
         viewModelScope.launch {
+            _loading.value = true                // <--- IMPORTANTE
             try {
                 _eventPins.value = repository.getEventPins()
             } catch (e: Exception) {
